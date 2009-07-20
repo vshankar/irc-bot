@@ -10,15 +10,17 @@ use constant    NICK    => 'kaboom';
 use constant    PORT    => 8001;
 use constant    CHANNEL => '#irctestchannel';
 
+use constant    CHANNELHASH     => "#";
+
 sub new {
-    my $this = shift; 
+    my ($this, $option) = @_;
     my $class = ref($this) || $this;
 
     my $self = {
-        nick    => $_[0] || NICK,
-        server  => $_[1] || SERVER,
-        port    => $_[2] || PORT,
-        channel => $_[3] || CHANNEL
+        nick    => $option->{nick},
+        server  => $option->{server},
+        port    => $option->{port},
+        channel => $option->{channel}
     };
 
     bless($self);
@@ -41,14 +43,14 @@ sub bot_connect {
 sub bot_send_private_msg {
     my ($self, $conn) = @_;
 
-    $conn->privmsg($self->{channel},
-                        "Hello Boys");
+    $conn->privmsg(CHANNELHASH . $self->{channel},
+                                 "Hello Folks");
 }
 
 sub bot_join_channel{
     my ($self, $conn) = @_;
 
-    $conn->join($self->{channel});
+    $conn->join(CHANNELHASH . $self->{channel});
     $self->bot_send_private_msg($conn);
 }
 
@@ -70,7 +72,8 @@ sub bot_print {
     print "Conencting to => ";
     print "\n\tServer: " . $self->{server} . "\n\tPort: ".
                             $self->{port} . "\n\tNick: " .
-                            $self->{nick} . "\n";
+                            $self->{nick} . "\n\tChannel: #" .
+                            $self->{channel} . "\n";
 }
 
 
