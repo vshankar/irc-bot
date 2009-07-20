@@ -1,0 +1,9 @@
+IRC BOT
+--------------------
+2.0 
+Added logging using Log::Log4perl.
+Added command line option parsing.
+--------------------
+1.0
+Initial Revision
+

@@ -1,0 +1,8 @@
+% perl Makefile.PL
+% make
+% sudo make install
+% irc-bot.pl
+
+--
+enjoy
+

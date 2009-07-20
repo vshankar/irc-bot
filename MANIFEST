@@ -1,0 +1,7 @@
+Makefile.PL
+MANIFEST
+lib/Bot/IRC.pm
+bin/irc-bot.pl
+CHANGES
+INSTALL
+README

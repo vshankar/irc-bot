@@ -1,2 +1,9 @@
-A tiny bot written in perl.
+A tiny IRC bot written in perl.
 Still very very incomplete, need to work on it.
+
+Perl Module that are needed:
+- Net::IRC
+- Log::Log4perl
+- Data::Dumper::Simple
+- Getopt::Long (mostly available as a core Perl module)
+
