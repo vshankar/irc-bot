@@ -1,5 +1,10 @@
 IRC BOT
 --------------------
+3.0
+Added anoying message replies for message coming to us.
+Default Server: irc.freenode.net, port: 6667
+Added logging inheritance and verbosity level from command line.
+--------------------
 2.0 
 Added logging using Log::Log4perl.
 Added command line option parsing.

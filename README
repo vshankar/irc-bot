@@ -6,4 +6,4 @@ Perl Module that are needed:
 - Log::Log4perl
 - Data::Dumper::Simple
 - Getopt::Long (mostly available as a core Perl module)
-
+- Log::Dispatch
