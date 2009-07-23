@@ -80,6 +80,7 @@ sub bot_connect {
                         Server  => $self->{server},
                         Port    => $self->{port},
                         );
+
     $logger->warn("Connected to " . $self->{server});
 }
 
@@ -90,6 +91,16 @@ sub bot_send_private_msg {
     $logger->info("Sending message to channel: " . $msg);
     $conn->privmsg(CHANNELHASH . $self->{channel},
                                  $msg);
+}
+
+sub bot_send_private_msg_2_nick {
+    my ($self, $conn, $nick, $msg) = @_;
+    my $logger = get_logger("Bot");
+
+    $logger->info("Sending private msg to " . $nick .
+                    "msg: " . $msg);
+
+    $conn->privmsg($nick, $msg);
 }
 
 sub bot_join_channel {
@@ -122,6 +133,33 @@ sub bot_process_message {
     }
 }
 
+sub bot_cdcc {
+    my ($self, $conn, $event) = @_;
+    my $logger = get_logger("Bot");
+
+    my @dcc = split(/ /, $event->{args}[0]);
+
+    $logger->info("Recieved DCC " . uc($dcc[1]) . " from " .
+                    $event->{nick});
+
+    if (uc($dcc[1]) eq 'CHAT') {
+        $conn->new_chat(0, $event->{nick}, $dcc[-2],
+                                           $dcc[-1]);
+        warn Dumper($event);
+    }
+}
+
+# need to reply the peer with a
+# crafty message. :-)
+sub bot_private_msg {
+    my ($self, $conn, $event) = @_;
+
+    $self->bot_send_private_msg_2_nick($conn,
+                                       $event->{nick},
+                                       $event->{args}[0]
+                                    );     
+}
+
 sub bot_handlers {
     my $self = shift;
     my $logger = get_logger("Bot");
@@ -138,6 +176,18 @@ sub bot_handlers {
     $self->{connection}->add_handler('public',
                             sub {
                                 $self->bot_process_message(@_);
+                            }
+                        );
+    
+    $self->{connection}->add_handler('cdcc',
+                            sub {
+                                $self->bot_cdcc(@_);
+                            }
+                        );
+
+    $self->{connection}->add_handler('chat',
+                            sub {
+                                $self->bot_private_msg(@_);
                             }
                         );
 
