@@ -1,5 +1,9 @@
 IRC BOT
 --------------------
+4.0
+CTCP message replies (version, ping)
+Request DCC CHAT to peers.
+-------------------
 3.0
 Added anoying message replies for message coming to us.
 Default Server: irc.freenode.net, port: 6667
