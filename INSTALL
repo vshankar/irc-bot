@@ -1,7 +1,7 @@
 % perl Makefile.PL
 % make
 % sudo make install
-% irc-bot.pl --server irc.freenode.net --port 8001 --channel irctest --verbose 3
+% irc-bot.pl --server irc.freenode.net --port 8001 --nick japh --channel irctest --verbose 3
 
 (NOTE : channel should be given _without_ a #)
 
