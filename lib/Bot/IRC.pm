@@ -43,6 +43,16 @@ sub __select_random_quip {
     return $quips[$rval];
 }
 
+sub __send_dcc_request_2_nick {
+    my ($conn, $nick, $host) = @_;
+    my $logger = get_logger("Bot");
+
+    $logger->info("Sending DCC request to: " . $nick .
+                    " Address: " . $host);
+
+    $conn->new_chat(1, $nick, $host, undef);
+}
+
 ####################################################
 
 sub new {
@@ -131,6 +141,13 @@ sub bot_process_message {
             $self->bot_send_private_msg($conn, "Hmm, for me ?");
         }
     }
+
+    if ($retval) {
+        # First arg becomes $conn
+        $conn->schedule(10, \&__send_dcc_request_2_nick,
+                            $from_nick, $event->{host}
+                        );
+    }
 }
 
 sub bot_cdcc {
@@ -145,7 +162,6 @@ sub bot_cdcc {
     if (uc($dcc[1]) eq 'CHAT') {
         $conn->new_chat(0, $event->{nick}, $dcc[-2],
                                            $dcc[-1]);
-        warn Dumper($event);
     }
 }
 
@@ -159,6 +175,25 @@ sub bot_private_msg {
                                        $event->{args}[0]
                                     );     
 }
+
+# common sub to generate CTCP replies
+sub bot_ctcp_reply {
+    my ($self, $conn, $event, $what) = @_;
+    my $logger = get_logger("Bot");
+
+    $logger->info("CTCP " . $event->{args}->[0] . " reply to " . 
+                        $event->{nick}
+                        );
+
+    if ($what eq 'version') {
+        $conn->ctcp_reply($event->{nick}, "VERSION xchat 2.8.6 FreeBSD");
+    } else {
+        if ($what eq 'ping') {
+            $conn->ctcp_reply($event->{nick}, "PING " . $event->{args}->[0]);
+        }
+    }
+}
+
 
 sub bot_handlers {
     my $self = shift;
@@ -184,6 +219,27 @@ sub bot_handlers {
                                 $self->bot_cdcc(@_);
                             }
                         );
+
+    $self->{connection}->add_handler('dcc_open',
+                            sub {
+                            }
+                        );
+
+    ###################### CTCP Related Handlers ######################
+
+    $self->{connection}->add_handler('cversion',
+                            sub {
+                                $self->bot_ctcp_reply(@_, "version");
+                            }
+                        );
+
+    $self->{connection}->add_handler('cping',
+                            sub {
+                                $self->bot_ctcp_reply(@_, "ping");
+                            }
+                        );
+
+    #####################################################################
 
     $self->{connection}->add_handler('chat',
                             sub {
